@@ -1,0 +1,92 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+void show_warmer(double temperature[][24], int days, double cutoff);
+double find_average(double temperature[][24], int days);
+void find_daily_mmm(double day_temps[], double &max, double &min, double &mean);
+
+int main (){
+	double celcius[7][24];
+	ifstream fileOut("temperature.dat");
+
+	if(fileOut.fail()){
+		cout << "Error opening file for output. Exiting...\n";
+		return(0);
+	}
+
+	   for(int i=0;i<7;i++){
+       for(int j=0;j<24;j++){
+           double farenInput;
+           fileOut>farenInput;
+          
+           celcius[i][j]=((farenInput-32)*5)/9;
+       }
+   }
+  
+  
+   double cutoff;
+   cout<<"Enter the value for which to find warmer temperatures (C) :";
+   cin>>cutoff;
+  
+   show_warmer(celcius,7,cutoff);
+   cout<<"\n\n";
+   double avg=find_average(celcius,7);  
+   printf("The average temperature of all days was %.2f",avg);
+  
+   printf("\n\nThe maximum, minimum, and mean temperatures for each day: \n\n");
+   double max,min,mean;
+   for(int i=0;i<7;i++){
+       find_daily_mmm(celcius[i],max,min,mean);
+       printf("Day %d: max %.2f, min %.2f C, mean %.2f C.\n",(i+1),max,min,mean);
+   }
+  
+   return 0;
+}
+
+
+void show_warmer(double temparature[][24],int days, double cutoff){
+  
+   printf("\nTimes at which tempertures warmer than %.2f C were found: \n\n",cutoff);
+  
+   for(int i=0;i<days;i++){
+       for(int j=0;j<24;j++){
+           if(temparature[i][j]>cutoff){
+               printf("At day %d, hour %d, the temperature was %.2f C.\n",(i+1),(j+1),temparature[i][j]);
+           }          
+       }  
+   }
+}
+
+
+double find_average(double temparature[][24],int days){
+   double avg = 0;
+   int count=0;
+  
+   for(int i=0;i<days;i++){
+       for(int j=0;j<24;j++){
+           avg+=temparature[i][j];  
+           count++;
+       }  
+   }
+  
+   return avg/count;
+}
+
+
+void find_daily_mmm(double temps[],double &max, double &min, double &mean){
+   max = temps[0];
+   min = temps[0];
+   mean = 0;
+  
+   for(int i=0;i<24;i++){
+       if(temps[i]<min) min= temps[i];
+       if(temps[i]>max) max= temps[i];
+      
+       mean+=temps[i];
+   }
+  
+   mean=mean/24;
+}
+
